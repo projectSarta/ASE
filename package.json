@@ -1,0 +1,13 @@
+{
+  "name": "ase-live-mobile",
+  "version": "1.0.0",
+  "description": "Mobile live-prices web app sourced from aselive.jo (Amman Stock Exchange) guest session",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "private": true
+}
