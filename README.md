@@ -17,9 +17,13 @@ A small zero-dependency Node proxy holds an ASELive session, fetches the JSONP m
   - 5-level order book (bid/ask) and the recent-trades tape
 - **Resilient session** — auto re-logs-in if the upstream session expires, plus a periodic keep-alive.
 
-## Run
+## Live
 
-Requires **Node 18+** (uses the built-in `fetch`). No dependencies to install.
+Deployed as a Cloudflare Worker: **https://ase-live.iyas85.workers.dev**
+
+## Run locally
+
+Requires **Node 18+** (uses the built-in `fetch`). No runtime dependencies.
 
 ```bash
 node server.js
@@ -27,6 +31,18 @@ node server.js
 ```
 
 Change the port with `PORT=8080 node server.js`.
+
+## Deploy (Cloudflare Worker)
+
+The same app also runs on Cloudflare Workers — `public/index.html` is served as a
+static asset and `src/worker.js` handles the `/api/*` routes by fetching the public
+ASE endpoints from the edge (no session needed). Config is in `wrangler.jsonc`.
+
+```bash
+npm install        # installs wrangler (dev dependency)
+npx wrangler login # one-time browser auth
+npx wrangler deploy
+```
 
 ## Project structure
 
