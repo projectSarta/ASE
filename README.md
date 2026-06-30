@@ -19,7 +19,20 @@ A small zero-dependency Node proxy holds an ASELive session, fetches the JSONP m
 
 ## Live
 
-Deployed as a Cloudflare Worker: **https://ase-live.iyas85.workers.dev**
+- **GitHub Pages (static, no backend):** https://projectsarta.github.io/ASE/
+- **Cloudflare Worker:** https://ase-live.iyas85.workers.dev
+
+## Builds
+
+There are three interchangeable ways to run the same UI:
+
+| Build | File(s) | Backend? | Host |
+|---|---|---|---|
+| **Static** | `docs/index.html` | None — calls the ASE JSONP endpoints directly via `<script>` injection | GitHub Pages / any static host |
+| **Cloudflare Worker** | `src/worker.js` + `public/index.html` | Edge worker proxies the ASE endpoints | Cloudflare |
+| **Node** | `server.js` + `public/index.html` | Local Node proxy | localhost |
+
+The static build is the simplest — no server, no session, just a single HTML file.
 
 ## Run locally
 
