@@ -3,145 +3,172 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-<meta name="theme-color" content="#0b0f1a" />
-<title>ASE Live</title>
+<meta name="theme-color" content="#EBECE7" media="(prefers-color-scheme: light)" />
+<meta name="theme-color" content="#0E1317" media="(prefers-color-scheme: dark)" />
+<title>ASE Live · Amman Stock Exchange</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Sans+Arabic:wght@400;600&display=swap" rel="stylesheet" />
 <style>
   :root {
-    --bg: #0b0f1a; --card: #141a2b; --card2: #1b2236; --line: #242c44;
-    --txt: #eef1f8; --dim: #8b93ac; --up: #1fbf75; --down: #ff5466;
-    --accent: #2f80ed;
+    --paper: #EBECE7; --card: #F6F6F1; --ink: #191C21; --stone: #61666E;
+    --line: #D6D7D0; --hair: #E2E3DC; --accent: #14477E;
+    --up: #0B7A54; --down: #B23A2E; --flat: #7A7F86;
+    --up-bg: rgba(11,122,84,.11); --down-bg: rgba(178,58,46,.10);
+    --font-sans: "IBM Plex Sans", ui-sans-serif, system-ui, "Segoe UI", Roboto, sans-serif;
+    --font-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+    --font-ar: "IBM Plex Sans Arabic", var(--font-sans);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --paper: #0E1317; --card: #151B21; --ink: #E9EAE4; --stone: #8A9099;
+      --line: #232A31; --hair: #1A2026; --accent: #5B9BE6;
+      --up: #2BB27E; --down: #E06B5E; --flat: #7E858D;
+      --up-bg: rgba(43,178,126,.13); --down-bg: rgba(224,107,94,.12);
+    }
   }
   * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html { -webkit-text-size-adjust: 100%; }
   body {
-    margin: 0; background: var(--bg); color: var(--txt);
-    font: 15px/1.4 -apple-system, "Segoe UI", Roboto, system-ui, sans-serif;
-    padding-bottom: env(safe-area-inset-bottom);
+    margin: 0; background: var(--paper); color: var(--ink);
+    font: 15px/1.45 var(--font-sans);
+    padding-bottom: calc(16px + env(safe-area-inset-bottom));
+    -webkit-font-smoothing: antialiased;
   }
+  .dir-up { color: var(--up); } .dir-down { color: var(--down); } .dir-flat { color: var(--flat); }
+
   header {
-    position: sticky; top: 0; z-index: 5; background: rgba(11,15,26,.92);
-    backdrop-filter: blur(8px); border-bottom: 1px solid var(--line);
-    padding: calc(10px + env(safe-area-inset-top)) 14px 10px;
+    position: sticky; top: 0; z-index: 5; background: var(--paper);
+    padding: calc(12px + env(safe-area-inset-top)) 16px 0;
+    border-bottom: 1px solid var(--line);
   }
-  .brand { font-weight: 700; letter-spacing: .5px; font-size: 16px; }
-  .brand b { color: var(--accent); }
-  .idx { display: flex; align-items: baseline; gap: 10px; margin-top: 6px; }
-  .idx .val { font-size: 26px; font-weight: 700; }
-  .idx .chg { font-size: 15px; font-weight: 600; }
-  .idx .meta { margin-left: auto; font-size: 11px; color: var(--dim); text-align: right; }
-  .up { color: var(--up); } .down { color: var(--down); } .flat { color: var(--dim); }
+  .brand { display: flex; align-items: baseline; gap: 10px; }
+  .wm { font-weight: 700; font-size: 17px; letter-spacing: .04em; }
+  .wm b { color: var(--ink); } .wm i { font-style: normal; font-weight: 500; color: var(--accent); margin-left: 2px; }
+  .brand .ar { font-family: var(--font-ar); font-size: 12px; color: var(--stone); }
+  .brand .live { margin-left: auto; display: inline-flex; align-items: center; gap: 5px; font-size: 10px; font-weight: 600; letter-spacing: .14em; color: var(--stone); }
+  .brand .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--up); animation: pulse 2.4s ease-in-out infinite; }
 
-  .controls { display: flex; gap: 8px; margin-top: 10px; }
-  #q {
-    flex: 1; background: var(--card2); border: 1px solid var(--line); color: var(--txt);
-    border-radius: 10px; padding: 9px 12px; font-size: 15px; outline: none;
-  }
-  .tabs { display: flex; gap: 6px; margin-top: 10px; overflow-x: auto; }
-  .tab {
-    flex: 0 0 auto; padding: 7px 14px; border-radius: 999px; font-size: 13px; font-weight: 600;
-    background: var(--card2); color: var(--dim); border: 1px solid var(--line);
-  }
-  .tab.on { color: #fff; background: var(--accent); border-color: transparent; }
+  .index { padding: 14px 0 12px; }
+  .ix-label { font-size: 10.5px; font-weight: 600; letter-spacing: .13em; text-transform: uppercase; color: var(--stone); }
+  .ix-row { display: flex; align-items: baseline; gap: 12px; margin-top: 4px; }
+  .ix-val { font-family: var(--font-mono); font-weight: 600; font-size: 34px; letter-spacing: -.01em; line-height: 1; }
+  .ix-chg { font-family: var(--font-mono); font-weight: 600; font-size: 15px; }
+  .ix-chg .tri { margin-right: 3px; }
+  .ix-meta { font-family: var(--font-mono); font-size: 11px; color: var(--stone); margin-top: 7px; letter-spacing: .01em; }
 
-  ul { list-style: none; margin: 0; padding: 6px 8px 24px; }
-  .row {
-    display: grid; grid-template-columns: 26px 1fr auto auto; align-items: center; gap: 10px;
-    padding: 11px 10px 11px 6px; background: var(--card); border: 1px solid var(--line);
-    border-radius: 12px; margin: 7px 0;
-  }
-  .row:active { background: var(--card2); }
-  .star {
-    font-size: 19px; line-height: 1; color: var(--dim); text-align: center;
-    padding: 6px 2px; cursor: pointer; user-select: none;
-  }
-  .star.on { color: #f4c14b; }
-  .sym { font-weight: 700; font-size: 15px; }
-  .name { color: var(--dim); font-size: 11px; margin-top: 2px;
-    white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 46vw; }
-  .last { font-variant-numeric: tabular-nums; font-weight: 600; text-align: right; }
-  .pill {
-    font-variant-numeric: tabular-nums; font-weight: 700; font-size: 13px; text-align: right;
-    min-width: 64px; padding: 4px 8px; border-radius: 8px;
-  }
-  .pill.up { background: rgba(31,191,117,.13); }
-  .pill.down { background: rgba(255,84,102,.13); }
-  .pill.flat { background: var(--card2); }
+  .search { width: 100%; margin: 2px 0 12px; background: var(--card); color: var(--ink); border: 1px solid var(--line); border-radius: 3px; padding: 10px 12px; font: 500 14px var(--font-sans); outline: none; }
+  .search::placeholder { color: var(--stone); }
+  .search:focus { border-color: var(--accent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 18%, transparent); }
 
-  .muted { color: var(--dim); text-align: center; padding: 30px; font-size: 13px; }
+  .tabs { display: flex; gap: 20px; overflow-x: auto; scrollbar-width: none; }
+  .tabs::-webkit-scrollbar { display: none; }
+  .tab { flex: 0 0 auto; background: none; border: 0; cursor: pointer; padding: 4px 0 11px; margin: 0; color: var(--stone); font: 600 12px var(--font-sans); letter-spacing: .07em; text-transform: uppercase; border-bottom: 2px solid transparent; }
+  .tab.on { color: var(--ink); border-bottom-color: var(--accent); }
 
-  /* detail sheet */
-  .sheet-bg {
-    position: fixed; inset: 0; background: rgba(0,0,0,.55); z-index: 20;
-    display: none; align-items: flex-end;
-  }
-  .sheet-bg.show { display: flex; }
-  .sheet {
-    width: 100%; max-height: 86vh; overflow: auto; background: var(--bg);
-    border-radius: 18px 18px 0 0; border-top: 1px solid var(--line);
-    padding: 16px 16px calc(20px + env(safe-area-inset-bottom));
-  }
-  .sheet h2 { margin: 0; font-size: 20px; }
-  .sheet .sub { color: var(--dim); font-size: 12px; margin: 2px 0 14px; }
-  .grab { width: 40px; height: 4px; background: var(--line); border-radius: 99px; margin: 0 auto 12px; }
-  .quote { margin: 8px 0 16px; }
-  .quote .big { font-size: 30px; font-weight: 800; font-variant-numeric: tabular-nums; }
-  .quote .delta { font-size: 15px; font-weight: 700; margin-left: 8px; }
-  .stats { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 12px; }
-  .stat {
-    background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 9px 11px;
-  }
-  .stat .k { color: var(--dim); font-size: 11px; text-transform: uppercase; letter-spacing: .5px; }
-  .stat .v { font-size: 17px; font-weight: 700; font-variant-numeric: tabular-nums; margin-top: 2px; }
-  .chartwrap { margin: 14px 0 4px; }
-  .spark { width: 100%; height: 96px; display: block; }
-  .chartcap { display: flex; justify-content: space-between; color: var(--dim); font-size: 11px; margin-top: 4px; }
-  .chartcap .pc { color: var(--dim); }
-  .book { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-  .book h3 { font-size: 12px; text-transform: uppercase; letter-spacing: .6px; color: var(--dim); margin: 0 0 6px; }
-  .lvl { display: flex; justify-content: space-between; font-variant-numeric: tabular-nums;
-    font-size: 13px; padding: 5px 8px; border-radius: 7px; margin: 3px 0; }
-  .lvl.bid { background: rgba(31,191,117,.10); } .lvl.ask { background: rgba(255,84,102,.10); }
-  .lvl .q { color: var(--dim); }
-  .tape { margin-top: 16px; }
-  .tape .t { display: grid; grid-template-columns: auto 1fr auto; gap: 10px;
-    font-variant-numeric: tabular-nums; font-size: 13px; padding: 6px 8px;
-    border-bottom: 1px solid var(--line); }
-  .tape .t .tm { color: var(--dim); }
-  .err { color: var(--down); }
+  ul { list-style: none; margin: 0; padding: 0; }
+  .row { display: grid; grid-template-columns: 20px 1fr auto auto; align-items: center; gap: 12px; padding: 12px 16px; border-bottom: 1px solid var(--hair); border-left: 3px solid transparent; cursor: pointer; }
+  .row.dir-up { border-left-color: color-mix(in srgb, var(--up) 55%, transparent); }
+  .row.dir-down { border-left-color: color-mix(in srgb, var(--down) 55%, transparent); }
+  .row.dir-flat { border-left-color: var(--hair); }
+  .row:active { background: var(--card); }
+  .star { background: none; border: 0; padding: 4px 0; margin: 0; cursor: pointer; font-size: 17px; line-height: 1; color: var(--line); }
+  .star.on { color: #D9A21B; }
+  .rw-id { min-width: 0; }
+  .rw-sym { font-weight: 600; font-size: 15px; letter-spacing: .01em; }
+  .rw-name { display: block; color: var(--stone); font-size: 11px; margin-top: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 44vw; }
+  .rw-last { font-family: var(--font-mono); font-weight: 600; font-size: 15px; text-align: right; }
+  .rw-chg { font-family: var(--font-mono); font-weight: 500; font-size: 12.5px; text-align: right; min-width: 78px; }
+  .rw-chg .tri { font-size: 9px; margin-right: 3px; vertical-align: 1px; }
+  .row.dir-up .rw-chg { color: var(--up); } .row.dir-down .rw-chg { color: var(--down); } .row.dir-flat .rw-chg { color: var(--flat); }
+
+  .flash-up { animation: fUp .9s ease-out; } .flash-down { animation: fDn .9s ease-out; }
+  @keyframes fUp { from { background: var(--up-bg); } to { background: transparent; } }
+  @keyframes fDn { from { background: var(--down-bg); } to { background: transparent; } }
+  @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: .35; } }
+
+  .muted { color: var(--stone); text-align: center; padding: 40px 24px; font-size: 13px; }
+  .muted.err { color: var(--down); }
+
+  .sheet-bg { position: fixed; inset: 0; background: rgba(10,12,15,.5); z-index: 20; display: none; }
+  .sheet-bg.show { display: block; }
+  .sheet { position: absolute; left: 0; right: 0; bottom: 0; max-height: 88vh; overflow: auto; background: var(--paper); border-top: 2px solid var(--accent); border-radius: 14px 14px 0 0; padding: 14px 18px calc(24px + env(safe-area-inset-bottom)); transform: translateY(100%); transition: transform .28s cubic-bezier(.22,.61,.36,1); }
+  .sheet-bg.show .sheet { transform: translateY(0); }
+  .grab { width: 38px; height: 4px; background: var(--line); border-radius: 99px; margin: 0 auto 14px; }
+  .sh-head { display: flex; align-items: center; gap: 8px; }
+  .sh-star { background: none; border: 0; cursor: pointer; font-size: 22px; line-height: 1; color: var(--line); padding: 0; }
+  .sh-star.on { color: #D9A21B; }
+  .sh-sym { font-weight: 700; font-size: 22px; letter-spacing: .01em; }
+  .sh-name { color: var(--stone); font-size: 12px; margin: 3px 0 14px; }
+
+  .q-now { display: flex; align-items: baseline; gap: 10px; }
+  .q-price { font-family: var(--font-mono); font-weight: 600; font-size: 32px; line-height: 1; }
+  .q-delta { font-family: var(--font-mono); font-weight: 500; font-size: 14px; }
+
+  .ohlc { display: grid; grid-template-columns: repeat(4, 1fr); margin: 16px 0 6px; border: 1px solid var(--line); border-radius: 4px; overflow: hidden; background: var(--card); }
+  .ohlc .cell { padding: 9px 10px; }
+  .ohlc .cell + .cell { border-left: 1px solid var(--line); }
+  .ohlc .k { display: block; font-size: 9.5px; font-weight: 600; letter-spacing: .09em; text-transform: uppercase; color: var(--stone); }
+  .ohlc .v { display: block; font-family: var(--font-mono); font-weight: 600; font-size: 15px; margin-top: 3px; }
+
+  .chartwrap { margin: 16px 0 4px; }
+  .spark { width: 100%; height: 104px; display: block; }
+  .chartcap { display: flex; justify-content: space-between; font-family: var(--font-mono); font-size: 10.5px; color: var(--stone); margin-top: 5px; }
+
+  .seclabel { font-size: 10.5px; font-weight: 600; letter-spacing: .11em; text-transform: uppercase; color: var(--stone); margin: 20px 0 8px; }
+  .ladder { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .ladder .col .lh { font-size: 10px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--stone); margin-bottom: 5px; }
+  .lvl { position: relative; display: flex; justify-content: space-between; align-items: center; font-family: var(--font-mono); font-size: 12.5px; padding: 5px 8px; margin: 2px 0; border-radius: 3px; overflow: hidden; }
+  .lvl > span { position: relative; z-index: 1; }
+  .lvl::before { content: ""; position: absolute; top: 0; bottom: 0; z-index: 0; }
+  .lvl.bid::before { right: 0; width: var(--f, 0%); background: var(--up-bg); }
+  .lvl.ask::before { left: 0; width: var(--f, 0%); background: var(--down-bg); }
+  .lvl.bid .p { color: var(--up); } .lvl.ask .p { color: var(--down); }
+  .lvl .q { color: var(--stone); }
+
+  .tape .tr { display: grid; grid-template-columns: auto 1fr auto; gap: 12px; align-items: baseline; font-family: var(--font-mono); font-size: 12.5px; padding: 6px 2px; border-bottom: 1px solid var(--hair); }
+  .tape .tm { color: var(--stone); font-size: 11.5px; }
+  .tape .tp.dir-up { color: var(--up); } .tape .tp.dir-down { color: var(--down); }
+  .tape .tq { color: var(--stone); }
+
+  @media (prefers-reduced-motion: reduce) { * { animation: none !important; } .sheet { transition: none; } }
 </style>
 </head>
 <body>
 <header>
-  <div class="brand"><b>ASE</b> Live · Amman Stock Exchange</div>
-  <div class="idx">
-    <span class="val" id="idxVal">—</span>
-    <span class="chg" id="idxChg">—</span>
-    <span class="meta" id="idxMeta"></span>
+  <div class="brand">
+    <span class="wm"><b>ASE</b><i>LIVE</i></span>
+    <span class="ar">بورصة عمّان</span>
+    <span class="live"><span class="dot"></span>LIVE</span>
   </div>
-  <div class="controls">
-    <input id="q" placeholder="Search symbol or company…" autocomplete="off" />
+  <div class="index">
+    <div class="ix-label">ASE General Index</div>
+    <div class="ix-row">
+      <span class="ix-val" id="idxVal">—</span>
+      <span class="ix-chg" id="idxChg"></span>
+    </div>
+    <div class="ix-meta" id="idxMeta"></div>
   </div>
-  <div class="tabs" id="tabs">
-    <div class="tab on" data-t="all">All</div>
-    <div class="tab" data-t="watch">★ Watch</div>
-    <div class="tab" data-t="gainers">Gainers</div>
-    <div class="tab" data-t="losers">Losers</div>
-    <div class="tab" data-t="active">Active</div>
-  </div>
+  <input class="search" id="q" placeholder="Search symbol or company" autocomplete="off" />
+  <nav class="tabs" id="tabs">
+    <button class="tab on" data-t="all">All</button>
+    <button class="tab" data-t="watch">Watch</button>
+    <button class="tab" data-t="gainers">Gainers</button>
+    <button class="tab" data-t="losers">Losers</button>
+    <button class="tab" data-t="active">Active</button>
+  </nav>
 </header>
 
-<ul id="list"><li class="muted">Loading live prices…</li></ul>
+<ul id="list"><li class="muted">Loading the tape…</li></ul>
 
-<div class="sheet-bg" id="sheetBg">
-  <div class="sheet" id="sheet"></div>
-</div>
+<div class="sheet-bg" id="sheetBg"><div class="sheet" id="sheet"></div></div>
 
 <script>
+// UI talks to the local proxy (/api/*), which fetches + parses the ASE feed.
 const $ = (s) => document.querySelector(s);
-let tab = 'all';
-let allRows = [];        // from /api/ticker
-let listData = [];       // current tab data
-let query = '';
+let tab = 'all', allRows = [], listData = [], query = '';
 let watch = new Set(JSON.parse(localStorage.getItem('ase_watch') || '[]'));
+let lastPx = {}, flashSet = null;
 const saveWatch = () => localStorage.setItem('ase_watch', JSON.stringify([...watch]));
 function toggleWatch(sym) {
   if (watch.has(sym)) watch.delete(sym); else watch.add(sym);
@@ -150,23 +177,20 @@ function toggleWatch(sym) {
 }
 
 const fmt = (n, d = 2) => (n == null ? '—' : Number(n).toLocaleString(undefined, { minimumFractionDigits: d, maximumFractionDigits: d }));
-const cls = (n) => (n > 0 ? 'up' : n < 0 ? 'down' : 'flat');
-const sign = (n) => (n > 0 ? '+' : '') + fmt(n, 2) + '%';
+const dir = (n) => (n > 0 ? 'up' : n < 0 ? 'down' : 'flat');
+const sign = (n) => (n == null ? '' : (n > 0 ? '+' : '') + fmt(n, 2) + '%');
+const tri = (n) => (n > 0 ? '▲' : n < 0 ? '▼' : '·');
 
-async function getJson(url) {
-  const r = await fetch(url);
-  if (!r.ok) throw new Error('HTTP ' + r.status);
-  return r.json();
-}
+async function getJson(url) { const r = await fetch(url); if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); }
 
 async function loadIndex() {
   try {
     const i = await getJson('/api/index');
     $('#idxVal').textContent = fmt(i.value);
     const c = $('#idxChg');
-    c.textContent = (i.changePct > 0 ? '▲ ' : i.changePct < 0 ? '▼ ' : '') + sign(i.changePct);
-    c.className = 'chg ' + cls(i.changePct);
-    $('#idxMeta').textContent = `Vol ${fmt(i.volume,0)} · Val ${fmt(i.turnover,0)} · ${fmt(i.trades,0)} trades`;
+    c.className = 'ix-chg dir-' + dir(i.changePct);
+    c.innerHTML = `<span class="tri">${tri(i.changePct)}</span>${i.changePts > 0 ? '+' : ''}${fmt(i.changePts)} · ${sign(i.changePct)}`;
+    $('#idxMeta').textContent = `VOL ${fmt(i.volume,0)}   VAL ${fmt(i.turnover,0)}   ${fmt(i.trades,0)} TRADES`;
   } catch (e) {}
 }
 
@@ -174,119 +198,118 @@ async function loadList() {
   try {
     if (tab === 'all' || tab === 'watch') {
       const d = await getJson('/api/ticker');
-      allRows = d.rows.filter(r => r.last != null);
-      listData = tab === 'watch' ? allRows.filter(r => watch.has(r.sym)) : allRows;
+      allRows = d.rows.filter((r) => r.last != null);
+      listData = tab === 'watch' ? allRows.filter((r) => watch.has(r.sym)) : allRows;
     } else {
       const d = await getJson('/api/' + tab);
-      listData = d.map(r => ({ sym: r.sym, name: r.name, last: r.price, chg: r.chg }));
+      listData = d.map((r) => ({ sym: r.sym, name: r.name, last: r.price, chg: r.chg }));
     }
+    flashSet = {};
+    for (const r of listData) { if (lastPx[r.sym] != null && lastPx[r.sym] !== r.last) flashSet[r.sym] = r.last > lastPx[r.sym] ? 'up' : 'down'; lastPx[r.sym] = r.last; }
     render();
   } catch (e) {
-    $('#list').innerHTML = `<li class="muted err">Could not load data: ${e.message}</li>`;
+    $('#list').innerHTML = `<li class="muted err">Couldn’t reach the exchange feed — ${e.message}. Retrying…</li>`;
   }
 }
 
 function render() {
   const q = query.toLowerCase();
-  const rows = listData.filter(r =>
-    !q || r.sym.toLowerCase().includes(q) || (r.name || '').toLowerCase().includes(q));
+  const rows = listData.filter((r) => !q || r.sym.toLowerCase().includes(q) || (r.name || '').toLowerCase().includes(q));
   if (!rows.length) {
-    const msg = tab === 'watch' && !q
-      ? 'Your watchlist is empty — tap ☆ next to any symbol to add it.'
-      : 'No matches';
-    $('#list').innerHTML = `<li class="muted">${msg}</li>`;
-    return;
+    $('#list').innerHTML = `<li class="muted">${tab === 'watch' && !q ? 'No symbols yet — tap ☆ on any row to follow it.' : 'No matches.'}</li>`;
+    flashSet = null; return;
   }
-  $('#list').innerHTML = rows.map(r => `
-    <li class="row" data-sym="${r.sym}">
-      <div class="star ${watch.has(r.sym) ? 'on' : ''}" data-star="${r.sym}">${watch.has(r.sym) ? '★' : '☆'}</div>
-      <div>
-        <div class="sym">${r.sym}</div>
-        ${r.name ? `<div class="name">${r.name}</div>` : ''}
-      </div>
-      <div class="last">${fmt(r.last)}</div>
-      <div class="pill ${cls(r.chg)}">${sign(r.chg)}</div>
-    </li>`).join('');
+  const fl = flashSet || {};
+  $('#list').innerHTML = rows.map((r) => {
+    const f = fl[r.sym] ? ` flash-${fl[r.sym]}` : '';
+    return `<li class="row dir-${dir(r.chg)}${f}" data-sym="${r.sym}">
+      <button class="star${watch.has(r.sym) ? ' on' : ''}" data-star="${r.sym}" aria-label="Toggle watch">${watch.has(r.sym) ? '★' : '☆'}</button>
+      <div class="rw-id"><span class="rw-sym">${r.sym}</span>${r.name ? `<span class="rw-name">${r.name}</span>` : ''}</div>
+      <span class="rw-last">${fmt(r.last)}</span>
+      <span class="rw-chg"><span class="tri">${tri(r.chg)}</span>${sign(r.chg)}</span>
+    </li>`;
+  }).join('');
+  flashSet = null;
 }
 
-// mini intraday sparkline (chronological prices, dashed prev-close baseline)
-function buildChart(prices, prevClose, dir) {
-  if (!prices || prices.length < 2)
-    return '<div class="muted" style="padding:18px">No intraday trades yet</div>';
-  const W = 300, H = 96, pad = 10;
+function buildChart(prices, prevClose, d) {
+  if (!prices || prices.length < 2) return '<div class="muted" style="padding:22px">No intraday trades yet.</div>';
+  const W = 320, H = 104, pad = 12;
   const lo = Math.min(...prices, prevClose), hi = Math.max(...prices, prevClose);
   const span = (hi - lo) || 1;
   const X = (i) => (i / (prices.length - 1)) * W;
   const Y = (v) => H - pad - ((v - lo) / span) * (H - 2 * pad);
   const pts = prices.map((p, i) => `${X(i).toFixed(1)},${Y(p).toFixed(1)}`);
-  const line = 'M' + pts.join(' L');
-  const area = `M${X(0)},${H} L${pts.join(' L')} L${X(prices.length - 1)},${H} Z`;
   const baseY = Y(prevClose).toFixed(1);
-  const col = dir > 0 ? 'var(--up)' : dir < 0 ? 'var(--down)' : 'var(--dim)';
+  const col = d > 0 ? 'var(--up)' : d < 0 ? 'var(--down)' : 'var(--flat)';
+  const ex = X(prices.length - 1).toFixed(1), ey = Y(prices[prices.length - 1]).toFixed(1);
   return `<svg class="spark" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none">
-    <line x1="0" y1="${baseY}" x2="${W}" y2="${baseY}" stroke="var(--dim)" stroke-width="1" stroke-dasharray="4 3" opacity="0.6" vector-effect="non-scaling-stroke"/>
-    <path d="${area}" fill="${col}" opacity="0.12"/>
-    <path d="${line}" fill="none" stroke="${col}" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"/>
+    <line x1="0" y1="${baseY}" x2="${W}" y2="${baseY}" stroke="var(--stone)" stroke-width="1" stroke-dasharray="3 3" opacity=".55" vector-effect="non-scaling-stroke"/>
+    <path d="M${X(0)},${H} L${pts.join(' L')} L${ex},${H} Z" fill="${col}" opacity=".13"/>
+    <path d="M${pts.join(' L')}" fill="none" stroke="${col}" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"/>
+    <circle cx="${ex}" cy="${ey}" r="3.2" fill="${col}"/>
   </svg>`;
 }
 
-// detail sheet -------------------------------------------------------------
 async function openSheet(sym) {
-  const bg = $('#sheetBg'), sheet = $('#sheet');
-  bg.classList.add('show');
-  sheet.innerHTML = `<div class="grab"></div><h2>${sym}</h2><div class="sub">Loading…</div>`;
+  $('#sheetBg').classList.add('show');
+  const sheet = $('#sheet');
+  sheet.innerHTML = `<div class="grab"></div><div class="sh-head"><span class="sh-sym">${sym}</span></div><div class="sh-name">Loading…</div>`;
   try {
-    const [quote, depth, intra] = await Promise.all([
+    const [q, dp, ia] = await Promise.all([
       getJson('/api/quote?symbol=' + encodeURIComponent(sym)),
       getJson('/api/depth?symbol=' + encodeURIComponent(sym)),
       getJson('/api/intraday?symbol=' + encodeURIComponent(sym)),
     ]);
-    const row = allRows.find(r => r.sym === sym) || quote;
-    const bids = depth.bid.map(l => `<div class="lvl bid"><span>${fmt(l.price)}</span><span class="q">${fmt(l.qty,0)}</span></div>`).join('') || '<div class="muted">—</div>';
-    const asks = depth.ask.map(l => `<div class="lvl ask"><span>${fmt(l.price)}</span><span class="q">${fmt(l.qty,0)}</span></div>`).join('') || '<div class="muted">—</div>';
-    const tape = intra.trades.length
-      ? intra.trades.map(t => `<div class="t"><span class="tm">${t.time}</span><span>${fmt(t.price)}</span><span>${fmt(t.qty,0)}</span></div>`).join('')
-      : '<div class="muted">No trades yet</div>';
-    const dn = quote.changePct;
-    // trades come newest-first; reverse to chronological for the chart
-    const chrono = intra.trades.map(t => t.price).filter(Number.isFinite).reverse();
-    const tEarliest = intra.trades.length ? intra.trades[intra.trades.length - 1].time : '';
-    const tLatest = intra.trades.length ? intra.trades[0].time : '';
-    const chart = `
-      <div class="chartwrap">
-        ${buildChart(chrono, quote.prevClose, dn)}
-        <div class="chartcap"><span>${tEarliest}</span><span class="pc">- - prev close ${fmt(quote.prevClose)}</span><span>${tLatest}</span></div>
-      </div>`;
+    const bid = dp.bid || [], ask = dp.ask || [];
+    const maxQ = Math.max(1, ...ask.map((l) => l.qty || 0), ...bid.map((l) => l.qty || 0));
+    const trades = ia.trades || [];
+    const dd = q.changePct;
+    const bar = (l, side) => `<div class="lvl ${side}" style="--f:${((l.qty || 0) / maxQ * 100).toFixed(0)}%"><span class="p">${fmt(l.price)}</span><span class="q">${fmt(l.qty,0)}</span></div>`;
+    const bids = bid.map((l) => bar(l, 'bid')).join('') || '<div class="muted" style="padding:10px">—</div>';
+    const asks = ask.map((l) => bar(l, 'ask')).join('') || '<div class="muted" style="padding:10px">—</div>';
+    const tape = trades.length
+      ? trades.map((t) => `<div class="tr"><span class="tm">${t.time}</span><span class="tp dir-${dir(q.prevClose != null ? t.price - q.prevClose : 0)}">${fmt(t.price)}</span><span class="tq">${fmt(t.qty,0)}</span></div>`).join('')
+      : '<div class="muted" style="padding:14px">No trades yet.</div>';
+    const chrono = trades.map((t) => t.price).filter(Number.isFinite).reverse();
+
     sheet.innerHTML = `
       <div class="grab"></div>
-      <h2><span class="star ${watch.has(sym)?'on':''}" data-sheetstar="${sym}" style="font-size:22px;padding:0 8px 0 0;display:inline">${watch.has(sym)?'★':'☆'}</span>${sym}</h2>
-      <div class="sub">${quote.name || row.name || ''}</div>
-      <div class="quote">
-        <span class="big ${cls(dn)}">${fmt(quote.current)}</span>
-        <span class="delta ${cls(dn)}">${quote.change!=null?(dn>0?'+':'')+fmt(quote.change):''} ${dn!=null?'('+sign(dn)+')':''}</span>
-        <div class="stats">
-          <div class="stat"><div class="k">Open</div><div class="v">${fmt(quote.open)}</div></div>
-          <div class="stat"><div class="k">Prev Close</div><div class="v">${fmt(quote.prevClose)}</div></div>
-          <div class="stat"><div class="k">High</div><div class="v up">${fmt(quote.high)}</div></div>
-          <div class="stat"><div class="k">Low</div><div class="v down">${fmt(quote.low)}</div></div>
-        </div>
+      <div class="sh-head">
+        <button class="sh-star${watch.has(sym) ? ' on' : ''}" data-sheetstar="${sym}" aria-label="Toggle watch">${watch.has(sym) ? '★' : '☆'}</button>
+        <span class="sh-sym">${sym}</span>
       </div>
-      ${chart}
-      <div class="book">
-        <div><h3>Bid</h3>${bids}</div>
-        <div><h3>Ask</h3>${asks}</div>
+      <div class="sh-name">${q.name || ''}</div>
+      <div class="q-now">
+        <span class="q-price dir-${dir(dd)}">${fmt(q.current)}</span>
+        <span class="q-delta dir-${dir(dd)}">${q.change != null ? (dd > 0 ? '+' : '') + fmt(q.change) : ''} ${dd != null ? '(' + sign(dd) + ')' : ''}</span>
       </div>
-      <div class="tape"><h3>Recent trades</h3>${tape}</div>`;
+      <div class="ohlc">
+        <div class="cell"><span class="k">Open</span><span class="v">${fmt(q.open)}</span></div>
+        <div class="cell"><span class="k">High</span><span class="v dir-up">${fmt(q.high)}</span></div>
+        <div class="cell"><span class="k">Low</span><span class="v dir-down">${fmt(q.low)}</span></div>
+        <div class="cell"><span class="k">Prev</span><span class="v">${fmt(q.prevClose)}</span></div>
+      </div>
+      <div class="chartwrap">
+        ${buildChart(chrono, q.prevClose, dd)}
+        <div class="chartcap"><span>${trades.length ? trades[trades.length - 1].time : ''}</span><span>prev close ${fmt(q.prevClose)}</span><span>${trades.length ? trades[0].time : ''}</span></div>
+      </div>
+      <div class="seclabel">Order book</div>
+      <div class="ladder">
+        <div class="col"><div class="lh">Bid</div>${bids}</div>
+        <div class="col"><div class="lh">Ask</div>${asks}</div>
+      </div>
+      <div class="seclabel">Recent trades</div>
+      <div class="tape">${tape}</div>`;
   } catch (e) {
-    sheet.innerHTML = `<div class="grab"></div><h2>${sym}</h2><div class="sub err">${e.message}</div>`;
+    sheet.innerHTML = `<div class="grab"></div><div class="sh-head"><span class="sh-sym">${sym}</span></div><div class="sh-name" style="color:var(--down)">${e.message}</div>`;
   }
 }
 
-// events -------------------------------------------------------------------
 $('#tabs').addEventListener('click', (e) => {
   const t = e.target.closest('.tab'); if (!t) return;
-  document.querySelectorAll('.tab').forEach(x => x.classList.toggle('on', x === t));
-  tab = t.dataset.t; loadList();
+  document.querySelectorAll('.tab').forEach((x) => x.classList.toggle('on', x === t));
+  tab = t.dataset.t; lastPx = {}; loadList();
 });
 $('#q').addEventListener('input', (e) => { query = e.target.value; render(); });
 $('#list').addEventListener('click', (e) => {
@@ -294,19 +317,14 @@ $('#list').addEventListener('click', (e) => {
   if (star) { toggleWatch(star.dataset.star); return; }
   const r = e.target.closest('.row'); if (r) openSheet(r.dataset.sym);
 });
-$('#sheetBg').addEventListener('click', (e) => {
-  if (e.target.id === 'sheetBg') $('#sheetBg').classList.remove('show');
-});
+$('#sheetBg').addEventListener('click', (e) => { if (e.target.id === 'sheetBg') $('#sheetBg').classList.remove('show'); });
 $('#sheet').addEventListener('click', (e) => {
-  const s = e.target.closest('[data-sheetstar]');
-  if (!s) return;
+  const s = e.target.closest('[data-sheetstar]'); if (!s) return;
   toggleWatch(s.dataset.sheetstar);
   const on = watch.has(s.dataset.sheetstar);
-  s.textContent = on ? '★' : '☆';
-  s.classList.toggle('on', on);
+  s.textContent = on ? '★' : '☆'; s.classList.toggle('on', on);
 });
 
-// poll ---------------------------------------------------------------------
 loadIndex(); loadList();
 setInterval(loadIndex, 4000);
 setInterval(() => { if (!$('#sheetBg').classList.contains('show')) loadList(); }, 4000);
