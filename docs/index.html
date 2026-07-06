@@ -207,7 +207,7 @@ const BASE = 'https://aselive.jo/v3/';
 const $ = (s) => document.querySelector(s);
 let tab = 'all', allRows = [], listData = [], query = '';
 let watch = new Set(JSON.parse(localStorage.getItem('ase_watch') || '[]'));
-let lastPx = {}, flashSet = null;
+let lastPx = {}, flashSet = null, marketClosed = false;
 const saveWatch = () => localStorage.setItem('ase_watch', JSON.stringify([...watch]));
 function toggleWatch(sym) {
   if (watch.has(sym)) watch.delete(sym); else watch.add(sym);
@@ -260,7 +260,13 @@ async function buildNames() {
 async function loadIndex() {
   try {
     const v = (await jsonp('market_index', 'index.php'))[0] || [];
-    const value = num(v[0]), chg = num(v[1]), pts = num(v[2]);
+    const value = num(v[0]), chg = num(v[1]), pts = num(v[2]), prev = num(v[6]);
+    if (value == null) {
+      $('#idxVal').textContent = prev != null ? fmt(prev) : '—';
+      const cc = $('#idxChg'); cc.className = 'ix-chg dir-flat'; cc.textContent = 'MARKET CLOSED';
+      $('#idxMeta').textContent = prev != null ? 'Previous close · exchange not trading now' : 'Exchange not trading now';
+      return;
+    }
     $('#idxVal').textContent = fmt(value);
     const c = $('#idxChg');
     c.className = 'ix-chg dir-' + dir(chg);
@@ -287,6 +293,7 @@ async function loadList() {
     else if (tab === 'losers') { listData = mapList(await jsonp('market_losers', 'losers.php'), 3); }
     else if (tab === 'active') { listData = mapList(await jsonp('market_value', 'activeByValue.php'), 4); }
     // detect price ticks for the flash micro-interaction
+    marketClosed = (tab === 'all' || tab === 'watch') ? allRows.length === 0 : listData.length === 0;
     flashSet = {};
     for (const r of listData) { if (lastPx[r.sym] != null && lastPx[r.sym] !== r.last) flashSet[r.sym] = r.last > lastPx[r.sym] ? 'up' : 'down'; lastPx[r.sym] = r.last; }
     render();
@@ -299,6 +306,7 @@ function render() {
   const q = query.toLowerCase();
   const rows = listData.filter((r) => !q || r.sym.toLowerCase().includes(q) || (r.name || '').toLowerCase().includes(q));
   if (!rows.length) {
+    if (marketClosed && !q) { $('#list').innerHTML = closedPanel(); flashSet = null; return; }
     $('#list').innerHTML = `<li class="muted">${tab === 'watch' && !q ? 'No symbols yet — tap ☆ on any row to follow it.' : 'No matches.'}</li>`;
     flashSet = null; return;
   }
@@ -313,6 +321,15 @@ function render() {
     </li>`;
   }).join('');
   flashSet = null;
+}
+
+function closedPanel() {
+  return `<li class="muted">
+    <div style="color:var(--ink);font-weight:600;font-size:15px;margin-bottom:8px">Market closed</div>
+    The Amman Stock Exchange isn’t publishing live prices right now (outside trading hours or pre-open).
+    <div style="margin-top:12px;font-family:var(--font-mono);font-size:12px;color:var(--stone)">Trading days · Sunday–Thursday</div>
+    <div style="margin-top:4px;font-size:12px">Prices appear automatically when trading resumes.</div>
+  </li>`;
 }
 
 // --- intraday sparkline ----------------------------------------------------
