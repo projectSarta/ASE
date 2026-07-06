@@ -46,8 +46,10 @@
   .wm { font-weight: 700; font-size: 17px; letter-spacing: .04em; }
   .wm b { color: var(--ink); } .wm i { font-style: normal; font-weight: 500; color: var(--accent); margin-left: 2px; }
   .brand .ar { font-family: var(--font-ar); font-size: 12px; color: var(--stone); }
-  .brand .live { margin-left: auto; display: inline-flex; align-items: center; gap: 5px; font-size: 10px; font-weight: 600; letter-spacing: .14em; color: var(--stone); }
-  .brand .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--up); animation: pulse 2.4s ease-in-out infinite; }
+  .brand .status { margin-left: auto; display: inline-flex; align-items: center; gap: 5px; font-size: 10px; font-weight: 600; letter-spacing: .12em; color: var(--stone); }
+  .brand .status .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--stone); }
+  .brand .status.open { color: var(--up); }
+  .brand .status.open .dot { background: var(--up); animation: pulse 2.4s ease-in-out infinite; }
 
   .index { padding: 14px 0 12px; }
   .ix-label { font-size: 10.5px; font-weight: 600; letter-spacing: .13em; text-transform: uppercase; color: var(--stone); }
@@ -139,7 +141,7 @@
   <div class="brand">
     <span class="wm"><b>ASE</b><i>LIVE</i></span>
     <span class="ar">بورصة عمّان</span>
-    <span class="live"><span class="dot"></span>LIVE</span>
+    <span class="status closed" id="mktStatus"><span class="dot"></span><span class="lbl">—</span></span>
   </div>
   <div class="index">
     <div class="ix-label">ASE General Index</div>
@@ -183,15 +185,22 @@ const tri = (n) => (n > 0 ? '▲' : n < 0 ? '▼' : '·');
 
 async function getJson(url) { const r = await fetch(url); if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); }
 
+function setStatus(open) {
+  const el = $('#mktStatus'); if (!el) return;
+  el.className = 'status ' + (open ? 'open' : 'closed');
+  el.querySelector('.lbl').textContent = open ? 'MARKET OPEN' : 'MARKET CLOSED';
+}
 async function loadIndex() {
   try {
     const i = await getJson('/api/index');
     if (i.value == null) {
+      setStatus(false);
       $('#idxVal').textContent = i.prevClose != null ? fmt(i.prevClose) : '—';
-      const cc = $('#idxChg'); cc.className = 'ix-chg dir-flat'; cc.textContent = 'MARKET CLOSED';
+      const cc = $('#idxChg'); cc.className = 'ix-chg dir-flat'; cc.textContent = '';
       $('#idxMeta').textContent = i.prevClose != null ? 'Previous close · exchange not trading now' : 'Exchange not trading now';
       return;
     }
+    setStatus(true);
     $('#idxVal').textContent = fmt(i.value);
     const c = $('#idxChg');
     c.className = 'ix-chg dir-' + dir(i.changePct);
