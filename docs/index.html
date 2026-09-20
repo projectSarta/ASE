@@ -3,182 +3,145 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-<meta name="theme-color" content="#EBECE7" media="(prefers-color-scheme: light)" />
-<meta name="theme-color" content="#0E1317" media="(prefers-color-scheme: dark)" />
+<meta name="theme-color" content="#E7E8E6" media="(prefers-color-scheme: light)" />
+<meta name="theme-color" content="#10152A" media="(prefers-color-scheme: dark)" />
 <title>ASE Live · Amman Stock Exchange</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Sans+Arabic:wght@400;600&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=Archivo+Expanded:wght@600;700&family=IBM+Plex+Sans+Arabic:wght@500&display=swap" rel="stylesheet" />
 <style>
   :root {
-    --paper: #EBECE7; --card: #F6F6F1; --ink: #191C21; --stone: #61666E;
-    --line: #D6D7D0; --hair: #E2E3DC; --accent: #14477E;
-    --up: #0B7A54; --down: #B23A2E; --flat: #7A7F86;
-    --up-bg: rgba(11,122,84,.11); --down-bg: rgba(178,58,46,.10);
-    --font-sans: "IBM Plex Sans", ui-sans-serif, system-ui, "Segoe UI", Roboto, sans-serif;
-    --font-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
-    --font-ar: "IBM Plex Sans Arabic", var(--font-sans);
+    --paper: #E7E8E6; --card: #F3F4F2; --line: #D4D6D2; --hair: #DEDFDB;
+    --ink: #1E232B; --stone: #676C74; --night: #1B2A4A;
+    --up: #17795E; --down: #B23A2E; --flat: #8A8F96;
+    --up-bg: rgba(23,121,94,.12); --down-bg: rgba(178,58,46,.11);
+    --font: "Archivo", ui-sans-serif, system-ui, "Segoe UI", Roboto, sans-serif;
+    --font-exp: "Archivo Expanded", "Archivo", ui-sans-serif, system-ui, sans-serif;
+    --font-ar: "IBM Plex Sans Arabic", var(--font);
   }
   @media (prefers-color-scheme: dark) {
     :root {
-      --paper: #0E1317; --card: #151B21; --ink: #E9EAE4; --stone: #8A9099;
-      --line: #232A31; --hair: #1A2026; --accent: #5B9BE6;
-      --up: #2BB27E; --down: #E06B5E; --flat: #7E858D;
-      --up-bg: rgba(43,178,126,.13); --down-bg: rgba(224,107,94,.12);
+      --paper: #10152A; --card: #182138; --line: #28324E; --hair: #1A2340;
+      --ink: #E9EAEE; --stone: #8B92A4; --night: #93A8E6;
+      --up: #2EBE86; --down: #E7685C; --flat: #7E858D;
+      --up-bg: rgba(46,190,134,.14); --down-bg: rgba(231,104,92,.13);
     }
   }
   * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
   html { -webkit-text-size-adjust: 100%; }
   body {
     margin: 0; background: var(--paper); color: var(--ink);
-    font: 15px/1.45 var(--font-sans);
-    padding-bottom: calc(16px + env(safe-area-inset-bottom));
-    -webkit-font-smoothing: antialiased;
+    font: 400 15px/1.5 var(--font);
+    padding-bottom: calc(20px + env(safe-area-inset-bottom));
+    -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility;
   }
-  .tnum { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+  .tnum { font-variant-numeric: tabular-nums; }
   .dir-up { color: var(--up); } .dir-down { color: var(--down); } .dir-flat { color: var(--flat); }
 
-  /* ---- masthead ---- */
-  header {
-    position: sticky; top: 0; z-index: 5; background: var(--paper);
-    padding: calc(12px + env(safe-area-inset-top)) 16px 0;
-    border-bottom: 1px solid var(--line);
-  }
-  .brand { display: flex; align-items: baseline; gap: 10px; }
-  .wm { font-weight: 700; font-size: 17px; letter-spacing: .04em; }
-  .wm b { color: var(--ink); } .wm i { font-style: normal; font-weight: 500; color: var(--accent); margin-left: 2px; }
-  .brand .ar { font-family: var(--font-ar); font-size: 12px; color: var(--stone); }
-  .brand .status {
-    margin-left: auto; display: inline-flex; align-items: center; gap: 5px;
-    font-size: 10px; font-weight: 600; letter-spacing: .12em; color: var(--stone);
-  }
-  .brand .status .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--stone); }
-  .brand .status.open { color: var(--up); }
-  .brand .status.open .dot { background: var(--up); animation: pulse 2.4s ease-in-out infinite; }
+  /* ---- header / hero ---- */
+  header { padding: calc(18px + env(safe-area-inset-top)) 20px 0; }
+  .brand { display: flex; align-items: center; gap: 10px; }
+  .wm { color: var(--night); line-height: 1; display: inline-flex; align-items: baseline; gap: 6px; }
+  .wm .a { font-family: var(--font-exp); font-weight: 700; font-size: 18px; letter-spacing: .02em; }
+  .wm .b { font-family: var(--font); font-weight: 500; font-size: 16px; opacity: .78; }
+  .brand .ar { font-family: var(--font-ar); font-weight: 500; font-size: 12.5px; color: var(--stone); }
+  .status { margin-left: auto; display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 500; color: var(--stone); }
+  .status .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--flat); }
+  .status.open { color: var(--up); }
+  .status.open .dot { background: var(--up); animation: pulse 2.6s ease-in-out infinite; }
 
-  .index { padding: 14px 0 12px; }
-  .ix-label { font-size: 10.5px; font-weight: 600; letter-spacing: .13em; text-transform: uppercase; color: var(--stone); }
-  .ix-row { display: flex; align-items: baseline; gap: 12px; margin-top: 4px; }
-  .ix-val { font-family: var(--font-mono); font-weight: 600; font-size: 34px; letter-spacing: -.01em; line-height: 1; }
-  .ix-chg { font-family: var(--font-mono); font-weight: 600; font-size: 15px; }
-  .ix-chg .tri { margin-right: 3px; }
-  .ix-meta { font-family: var(--font-mono); font-size: 11px; color: var(--stone); margin-top: 7px; letter-spacing: .01em; }
+  .hero { padding: 22px 0 18px; }
+  .ix-label { font-size: 13px; color: var(--stone); }
+  .ix-row { display: flex; align-items: baseline; gap: 14px; margin-top: 3px; flex-wrap: wrap; }
+  .ix-val { font-family: var(--font-exp); font-weight: 700; font-size: 46px; line-height: .95; letter-spacing: -.015em; color: var(--night); font-variant-numeric: tabular-nums; }
+  .ix-chg { display: inline-flex; align-items: baseline; gap: 10px; font-weight: 600; font-size: 15px; font-variant-numeric: tabular-nums; }
+  .ix-chg .tri { font-size: 11px; margin-right: 4px; }
+  .ix-meta { display: flex; gap: 20px; margin-top: 14px; font-size: 12.5px; font-variant-numeric: tabular-nums; }
+  .ix-meta .ml { color: var(--stone); }
+  .ix-meta .mv { color: var(--ink); font-weight: 500; }
 
-  .search {
-    width: 100%; margin: 2px 0 12px; background: var(--card); color: var(--ink);
-    border: 1px solid var(--line); border-radius: 3px; padding: 10px 12px;
-    font: 500 14px var(--font-sans); outline: none;
-  }
+  /* ---- controls ---- */
+  .search { width: calc(100% - 40px); margin: 4px 20px 14px; display: block; background: var(--card); color: var(--ink); border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; font: 400 15px var(--font); outline: none; }
   .search::placeholder { color: var(--stone); }
-  .search:focus { border-color: var(--accent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 18%, transparent); }
-
-  .tabs { display: flex; gap: 20px; overflow-x: auto; scrollbar-width: none; }
+  .search:focus { border-color: var(--night); }
+  .tabs { display: flex; gap: 22px; overflow-x: auto; scrollbar-width: none; padding: 0 20px; border-bottom: 1px solid var(--hair); }
   .tabs::-webkit-scrollbar { display: none; }
-  .tab {
-    flex: 0 0 auto; background: none; border: 0; cursor: pointer;
-    padding: 4px 0 11px; margin: 0; color: var(--stone);
-    font: 600 12px var(--font-sans); letter-spacing: .07em; text-transform: uppercase;
-    border-bottom: 2px solid transparent;
-  }
-  .tab.on { color: var(--ink); border-bottom-color: var(--accent); }
+  .tab { flex: 0 0 auto; background: none; border: 0; cursor: pointer; padding: 6px 0 12px; margin: 0 0 -1px; color: var(--stone); font: 500 14px var(--font); border-bottom: 2px solid transparent; }
+  .tab.on { color: var(--ink); border-bottom-color: var(--night); }
 
-  /* ---- ledger list ---- */
-  ul { list-style: none; margin: 0; padding: 0; }
-  .row {
-    display: grid; grid-template-columns: 20px 1fr auto auto; align-items: center; gap: 12px;
-    padding: 12px 16px; border-bottom: 1px solid var(--hair);
-    border-left: 3px solid transparent; cursor: pointer;
-  }
-  .row.dir-up { border-left-color: color-mix(in srgb, var(--up) 55%, transparent); }
-  .row.dir-down { border-left-color: color-mix(in srgb, var(--down) 55%, transparent); }
-  .row.dir-flat { border-left-color: var(--hair); }
+  /* ---- list ---- */
+  ul { list-style: none; margin: 0; padding: 4px 0 0; }
+  .row { display: grid; grid-template-columns: 24px 1fr auto auto; align-items: center; gap: 14px; padding: 13px 20px; border-bottom: 1px solid var(--hair); cursor: pointer; }
   .row:active { background: var(--card); }
-  .star {
-    background: none; border: 0; padding: 4px 0; margin: 0; cursor: pointer;
-    font-size: 17px; line-height: 1; color: var(--line);
-  }
-  .star.on { color: #D9A21B; }
+  .star { background: none; border: 0; padding: 4px; margin: 0 -4px; cursor: pointer; font-size: 16px; line-height: 1; color: var(--line); }
+  .star.on { color: #C9932B; }
   .rw-id { min-width: 0; }
-  .rw-sym { font-weight: 600; font-size: 15px; letter-spacing: .01em; }
-  .rw-name { display: block; color: var(--stone); font-size: 11px; margin-top: 1px;
-    white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 44vw; }
-  .rw-last { font-family: var(--font-mono); font-weight: 600; font-size: 15px; text-align: right; }
-  .rw-chg { font-family: var(--font-mono); font-weight: 500; font-size: 12.5px; text-align: right; min-width: 78px; }
-  .rw-chg .tri { font-size: 9px; margin-right: 3px; vertical-align: 1px; }
-  .row.dir-up .rw-chg { color: var(--up); } .row.dir-down .rw-chg { color: var(--down); } .row.dir-flat .rw-chg { color: var(--flat); }
+  .rw-sym { font-weight: 600; font-size: 15px; color: var(--ink); }
+  .rw-name { display: block; color: var(--stone); font-size: 12px; margin-top: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 46vw; }
+  .rw-last { font-weight: 600; font-size: 15px; color: var(--ink); text-align: right; font-variant-numeric: tabular-nums; }
+  .rw-chg { font-weight: 600; font-size: 13px; text-align: right; min-width: 76px; font-variant-numeric: tabular-nums; }
+  .rw-chg .tri { font-size: 9px; margin-right: 4px; }
 
-  .flash-up { animation: fUp .9s ease-out; } .flash-down { animation: fDn .9s ease-out; }
+  .flash-up { animation: fUp 1s ease-out; } .flash-down { animation: fDn 1s ease-out; }
   @keyframes fUp { from { background: var(--up-bg); } to { background: transparent; } }
   @keyframes fDn { from { background: var(--down-bg); } to { background: transparent; } }
-  @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: .35; } }
+  @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: .3; } }
 
-  .muted { color: var(--stone); text-align: center; padding: 40px 24px; font-size: 13px; }
+  .muted { color: var(--stone); text-align: center; padding: 44px 28px; font-size: 14px; line-height: 1.6; }
   .muted.err { color: var(--down); }
+  .muted .big { display: block; color: var(--ink); font-family: var(--font-exp); font-weight: 600; font-size: 17px; margin-bottom: 8px; }
 
   /* ---- detail sheet ---- */
-  .sheet-bg { position: fixed; inset: 0; background: rgba(10,12,15,.5); z-index: 20; display: none; }
+  .sheet-bg { position: fixed; inset: 0; background: rgba(14,18,30,.46); z-index: 20; display: none; }
   .sheet-bg.show { display: block; }
-  .sheet {
-    position: absolute; left: 0; right: 0; bottom: 0; max-height: 88vh; overflow: auto;
-    background: var(--paper); border-top: 2px solid var(--accent);
-    border-radius: 14px 14px 0 0; padding: 14px 18px calc(24px + env(safe-area-inset-bottom));
-    transform: translateY(100%); transition: transform .28s cubic-bezier(.22,.61,.36,1);
-  }
+  .sheet { position: absolute; left: 0; right: 0; bottom: 0; max-height: 90vh; overflow: auto; background: var(--paper); border-radius: 20px 20px 0 0; padding: 12px 20px calc(28px + env(safe-area-inset-bottom)); transform: translateY(100%); transition: transform .3s cubic-bezier(.22,.61,.36,1); }
   .sheet-bg.show .sheet { transform: translateY(0); }
-  .grab { width: 38px; height: 4px; background: var(--line); border-radius: 99px; margin: 0 auto 14px; }
-  .sh-head { display: flex; align-items: center; gap: 8px; }
+  .grab { width: 36px; height: 4px; background: var(--line); border-radius: 99px; margin: 0 auto 16px; }
+  .sh-head { display: flex; align-items: center; gap: 10px; }
   .sh-star { background: none; border: 0; cursor: pointer; font-size: 22px; line-height: 1; color: var(--line); padding: 0; }
-  .sh-star.on { color: #D9A21B; }
-  .sh-sym { font-weight: 700; font-size: 22px; letter-spacing: .01em; }
-  .sh-name { color: var(--stone); font-size: 12px; margin: 3px 0 14px; }
+  .sh-star.on { color: #C9932B; }
+  .sh-sym { font-family: var(--font-exp); font-weight: 700; font-size: 22px; color: var(--ink); }
+  .sh-name { color: var(--stone); font-size: 13px; margin: 4px 0 16px; }
+  .q-now { display: flex; align-items: baseline; gap: 12px; }
+  .q-price { font-family: var(--font-exp); font-weight: 700; font-size: 38px; line-height: 1; color: var(--night); font-variant-numeric: tabular-nums; }
+  .q-delta { font-weight: 600; font-size: 15px; font-variant-numeric: tabular-nums; }
 
-  .q-now { display: flex; align-items: baseline; gap: 10px; }
-  .q-price { font-family: var(--font-mono); font-weight: 600; font-size: 32px; line-height: 1; }
-  .q-delta { font-family: var(--font-mono); font-weight: 500; font-size: 14px; }
+  .ohlc { display: grid; grid-template-columns: repeat(4, 1fr); gap: 2px 18px; margin: 18px 0 4px; }
+  .ohlc .cell { padding: 2px 0; }
+  .ohlc .k { display: block; font-size: 12px; color: var(--stone); }
+  .ohlc .v { display: block; font-weight: 600; font-size: 16px; margin-top: 2px; font-variant-numeric: tabular-nums; }
 
-  .ohlc { display: grid; grid-template-columns: repeat(4, 1fr); margin: 16px 0 6px;
-    border: 1px solid var(--line); border-radius: 4px; overflow: hidden; background: var(--card); }
-  .ohlc .cell { padding: 9px 10px; }
-  .ohlc .cell + .cell { border-left: 1px solid var(--line); }
-  .ohlc .k { display: block; font-size: 9.5px; font-weight: 600; letter-spacing: .09em; text-transform: uppercase; color: var(--stone); }
-  .ohlc .v { display: block; font-family: var(--font-mono); font-weight: 600; font-size: 15px; margin-top: 3px; }
+  .chartwrap { margin: 18px 0 4px; }
+  .spark { width: 100%; height: 108px; display: block; }
+  .chartcap { display: flex; justify-content: space-between; font-size: 11.5px; color: var(--stone); margin-top: 6px; font-variant-numeric: tabular-nums; }
 
-  .chartwrap { margin: 16px 0 4px; }
-  .spark { width: 100%; height: 104px; display: block; }
-  .chartcap { display: flex; justify-content: space-between; font-family: var(--font-mono); font-size: 10.5px; color: var(--stone); margin-top: 5px; }
-
-  .seclabel { font-size: 10.5px; font-weight: 600; letter-spacing: .11em; text-transform: uppercase; color: var(--stone); margin: 20px 0 8px; }
-  .ladder { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-  .ladder .col .lh { font-size: 10px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--stone); margin-bottom: 5px; }
-  .lvl { position: relative; display: flex; justify-content: space-between; align-items: center;
-    font-family: var(--font-mono); font-size: 12.5px; padding: 5px 8px; margin: 2px 0; border-radius: 3px; overflow: hidden; }
+  .seclabel { font-size: 13px; color: var(--stone); margin: 22px 0 10px; }
+  .ladder { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .ladder .lh { font-size: 12px; color: var(--stone); margin-bottom: 6px; }
+  .lvl { position: relative; display: flex; justify-content: space-between; align-items: center; font-size: 13px; padding: 6px 9px; margin: 3px 0; border-radius: 7px; overflow: hidden; font-variant-numeric: tabular-nums; }
   .lvl > span { position: relative; z-index: 1; }
   .lvl::before { content: ""; position: absolute; top: 0; bottom: 0; z-index: 0; }
   .lvl.bid::before { right: 0; width: var(--f, 0%); background: var(--up-bg); }
   .lvl.ask::before { left: 0; width: var(--f, 0%); background: var(--down-bg); }
-  .lvl.bid .p { color: var(--up); } .lvl.ask .p { color: var(--down); }
+  .lvl.bid .p { color: var(--up); font-weight: 600; } .lvl.ask .p { color: var(--down); font-weight: 600; }
   .lvl .q { color: var(--stone); }
 
-  .tape .tr { display: grid; grid-template-columns: auto 1fr auto; gap: 12px; align-items: baseline;
-    font-family: var(--font-mono); font-size: 12.5px; padding: 6px 2px; border-bottom: 1px solid var(--hair); }
-  .tape .tm { color: var(--stone); font-size: 11.5px; }
-  .tape .tp.dir-up { color: var(--up); } .tape .tp.dir-down { color: var(--down); }
+  .tape .tr { display: grid; grid-template-columns: auto 1fr auto; gap: 14px; align-items: baseline; font-size: 13px; padding: 7px 2px; border-bottom: 1px solid var(--hair); font-variant-numeric: tabular-nums; }
+  .tape .tm { color: var(--stone); font-size: 12px; }
+  .tape .tp { font-weight: 600; } .tape .tp.dir-up { color: var(--up); } .tape .tp.dir-down { color: var(--down); } .tape .tp.dir-flat { color: var(--ink); }
   .tape .tq { color: var(--stone); }
 
-  @media (prefers-reduced-motion: reduce) {
-    * { animation: none !important; }
-    .sheet { transition: none; }
-  }
+  @media (prefers-reduced-motion: reduce) { *, .sheet { animation: none !important; transition: none !important; } }
 </style>
 </head>
 <body>
 <header>
   <div class="brand">
-    <span class="wm"><b>ASE</b><i>LIVE</i></span>
+    <span class="wm"><span class="a">ASE</span><span class="b">Live</span></span>
     <span class="ar">بورصة عمّان</span>
-    <span class="status closed" id="mktStatus"><span class="dot"></span><span class="lbl">—</span></span>
+    <span class="status" id="mktStatus"><span class="dot"></span><span class="lbl">—</span></span>
   </div>
-  <div class="index">
+  <div class="hero">
     <div class="ix-label">ASE General Index</div>
     <div class="ix-row">
       <span class="ix-val" id="idxVal">—</span>
@@ -186,30 +149,28 @@
     </div>
     <div class="ix-meta" id="idxMeta"></div>
   </div>
-  <input class="search" id="q" placeholder="Search symbol or company" autocomplete="off" />
-  <nav class="tabs" id="tabs">
-    <button class="tab on" data-t="all">All</button>
-    <button class="tab" data-t="watch">Watch</button>
-    <button class="tab" data-t="gainers">Gainers</button>
-    <button class="tab" data-t="losers">Losers</button>
-    <button class="tab" data-t="active">Active</button>
-  </nav>
 </header>
+<input class="search" id="q" placeholder="Search a symbol or company" autocomplete="off" />
+<nav class="tabs" id="tabs">
+  <button class="tab on" data-t="all">All</button>
+  <button class="tab" data-t="watch">Watch</button>
+  <button class="tab" data-t="gainers">Gainers</button>
+  <button class="tab" data-t="losers">Losers</button>
+  <button class="tab" data-t="active">Active</button>
+</nav>
 
-<ul id="list"><li class="muted">Loading the tape…</li></ul>
+<ul id="list"><li class="muted">Loading prices…</li></ul>
 
 <div class="sheet-bg" id="sheetBg"><div class="sheet" id="sheet"></div></div>
 
 <script>
-// ---------------------------------------------------------------------------
-// Fully static — talks DIRECTLY to the public ASELive JSONP endpoints via
-// <script> injection (responses are fn(new Array(...)) calls). No backend.
-// ---------------------------------------------------------------------------
+// Static build — reads the public ASELive JSONP endpoints directly via <script>
+// injection (responses are fn(new Array(...)) calls). No backend.
 const BASE = 'https://aselive.jo/v3/';
 const $ = (s) => document.querySelector(s);
 let tab = 'all', allRows = [], listData = [], query = '';
 let watch = new Set(JSON.parse(localStorage.getItem('ase_watch') || '[]'));
-let lastPx = {}, flashSet = null, marketClosed = false;
+let lastPx = {}, flashSet = null, marketClosed = false, idxAnimated = false;
 const saveWatch = () => localStorage.setItem('ase_watch', JSON.stringify([...watch]));
 function toggleWatch(sym) {
   if (watch.has(sym)) watch.delete(sym); else watch.add(sym);
@@ -223,7 +184,7 @@ const sign = (n) => (n == null ? '' : (n > 0 ? '+' : '') + fmt(n, 2) + '%');
 const tri = (n) => (n > 0 ? '▲' : n < 0 ? '▼' : '·');
 const num = (s) => { if (s == null) return null; const n = parseFloat(String(s).replace(/,/g, '')); return Number.isFinite(n) ? n : null; };
 
-// --- JSONP loader (one in-flight call per fixed function name) --------------
+// --- JSONP loader ----------------------------------------------------------
 const _pending = {}, _locks = {};
 ['ticker', 'market_index', 'market_gainers', 'market_losers', 'getDataSvc_NotChanged',
  'market_value', 'market_depth', 'market_intraday'].forEach((fn) => {
@@ -247,7 +208,7 @@ function jsonp(fn, url) {
   return next;
 }
 
-// --- company-name map ------------------------------------------------------
+// --- company names ---------------------------------------------------------
 const names = { ASE20: 'ASE20 Index', ASETR: 'ASE Total Return Index', PX1: 'ASE Price Index' };
 function learn(syms, nms) { if (syms && nms) for (let i = 0; i < syms.length; i++) if (nms[i]) names[syms[i]] = nms[i]; }
 let namesBuilt = false;
@@ -258,29 +219,42 @@ async function buildNames() {
   namesBuilt = true;
 }
 
-// --- loaders ---------------------------------------------------------------
+// --- index (with a single count-up on first load) --------------------------
 function setStatus(open) {
   const el = $('#mktStatus'); if (!el) return;
   el.className = 'status ' + (open ? 'open' : 'closed');
-  el.querySelector('.lbl').textContent = open ? 'MARKET OPEN' : 'MARKET CLOSED';
+  el.querySelector('.lbl').textContent = open ? 'Market open' : 'Market closed';
+}
+function setIndexValue(v) {
+  const el = $('#idxVal');
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (idxAnimated || reduce || v == null) { el.textContent = fmt(v); idxAnimated = true; return; }
+  idxAnimated = true;
+  const dur = 750, t0 = performance.now();
+  (function step(t) {
+    const k = Math.min(1, (t - t0) / dur), e = 1 - Math.pow(1 - k, 3);
+    el.textContent = fmt(v * e);
+    if (k < 1) requestAnimationFrame(step); else el.textContent = fmt(v);
+  })(t0);
 }
 async function loadIndex() {
   try {
     const v = (await jsonp('market_index', 'index.php'))[0] || [];
     const value = num(v[0]), chg = num(v[1]), pts = num(v[2]), prev = num(v[6]);
     if (value == null) {
-      setStatus(false);
+      setStatus(false); idxAnimated = true;
       $('#idxVal').textContent = prev != null ? fmt(prev) : '—';
-      const cc = $('#idxChg'); cc.className = 'ix-chg dir-flat'; cc.textContent = '';
-      $('#idxMeta').textContent = prev != null ? 'Previous close · exchange not trading now' : 'Exchange not trading now';
+      $('#idxChg').innerHTML = ''; $('#idxMeta').innerHTML = prev != null ? '<span class="ml">Previous close</span>' : '';
       return;
     }
     setStatus(true);
-    $('#idxVal').textContent = fmt(value);
-    const c = $('#idxChg');
-    c.className = 'ix-chg dir-' + dir(chg);
-    c.innerHTML = `<span class="tri">${tri(chg)}</span>${chg > 0 ? '+' : ''}${fmt(pts)} · ${sign(chg)}`;
-    $('#idxMeta').textContent = `VOL ${fmt(num(v[7]),0)}   VAL ${fmt(num(v[8]),0)}   ${fmt(num(v[9]),0)} TRADES`;
+    setIndexValue(value);
+    $('#idxChg').className = 'ix-chg dir-' + dir(chg);
+    $('#idxChg').innerHTML = `<span class="tri">${tri(chg)}</span>${chg > 0 ? '+' : ''}${fmt(pts)}<span>${sign(chg)}</span>`;
+    $('#idxMeta').innerHTML =
+      `<span><span class="ml">Vol</span> <span class="mv">${fmt(num(v[7]),0)}</span></span>` +
+      `<span><span class="ml">Val</span> <span class="mv">${fmt(num(v[8]),0)}</span></span>` +
+      `<span><span class="ml">Trades</span> <span class="mv">${fmt(num(v[9]),0)}</span></span>`;
   } catch (e) {}
 }
 
@@ -301,7 +275,6 @@ async function loadList() {
     } else if (tab === 'gainers') { listData = mapList(await jsonp('market_gainers', 'Gainers.php'), 3); }
     else if (tab === 'losers') { listData = mapList(await jsonp('market_losers', 'losers.php'), 3); }
     else if (tab === 'active') { listData = mapList(await jsonp('market_value', 'activeByValue.php'), 4); }
-    // detect price ticks for the flash micro-interaction
     marketClosed = (tab === 'all' || tab === 'watch') ? allRows.length === 0 : listData.length === 0;
     flashSet = {};
     for (const r of listData) { if (lastPx[r.sym] != null && lastPx[r.sym] !== r.last) flashSet[r.sym] = r.last > lastPx[r.sym] ? 'up' : 'down'; lastPx[r.sym] = r.last; }
@@ -311,40 +284,37 @@ async function loadList() {
   }
 }
 
+function closedPanel() {
+  return `<li class="muted"><span class="big">Market closed</span>
+    The Amman Stock Exchange isn’t publishing live prices right now.
+    Trading runs Sunday to Thursday — prices return here on their own when it reopens.</li>`;
+}
+
 function render() {
   const q = query.toLowerCase();
   const rows = listData.filter((r) => !q || r.sym.toLowerCase().includes(q) || (r.name || '').toLowerCase().includes(q));
   if (!rows.length) {
     if (marketClosed && !q) { $('#list').innerHTML = closedPanel(); flashSet = null; return; }
-    $('#list').innerHTML = `<li class="muted">${tab === 'watch' && !q ? 'No symbols yet — tap ☆ on any row to follow it.' : 'No matches.'}</li>`;
+    $('#list').innerHTML = `<li class="muted">${tab === 'watch' && !q ? 'No symbols yet. Tap ☆ on any row to follow it.' : 'No matches.'}</li>`;
     flashSet = null; return;
   }
   const fl = flashSet || {};
   $('#list').innerHTML = rows.map((r) => {
     const f = fl[r.sym] ? ` flash-${fl[r.sym]}` : '';
-    return `<li class="row dir-${dir(r.chg)}${f}" data-sym="${r.sym}">
-      <button class="star${watch.has(r.sym) ? ' on' : ''}" data-star="${r.sym}" aria-label="Toggle watch">${watch.has(r.sym) ? '★' : '☆'}</button>
+    return `<li class="row${f}" data-sym="${r.sym}">
+      <button class="star${watch.has(r.sym) ? ' on' : ''}" data-star="${r.sym}" aria-label="Follow ${r.sym}">${watch.has(r.sym) ? '★' : '☆'}</button>
       <div class="rw-id"><span class="rw-sym">${r.sym}</span>${r.name ? `<span class="rw-name">${r.name}</span>` : ''}</div>
       <span class="rw-last">${fmt(r.last)}</span>
-      <span class="rw-chg"><span class="tri">${tri(r.chg)}</span>${sign(r.chg)}</span>
+      <span class="rw-chg dir-${dir(r.chg)}"><span class="tri">${tri(r.chg)}</span>${sign(r.chg)}</span>
     </li>`;
   }).join('');
   flashSet = null;
 }
 
-function closedPanel() {
-  return `<li class="muted">
-    <div style="color:var(--ink);font-weight:600;font-size:15px;margin-bottom:8px">Market closed</div>
-    The Amman Stock Exchange isn’t publishing live prices right now (outside trading hours or pre-open).
-    <div style="margin-top:12px;font-family:var(--font-mono);font-size:12px;color:var(--stone)">Trading days · Sunday–Thursday</div>
-    <div style="margin-top:4px;font-size:12px">Prices appear automatically when trading resumes.</div>
-  </li>`;
-}
-
 // --- intraday sparkline ----------------------------------------------------
 function buildChart(prices, prevClose, d) {
-  if (!prices || prices.length < 2) return '<div class="muted" style="padding:22px">No intraday trades yet.</div>';
-  const W = 320, H = 104, pad = 12;
+  if (!prices || prices.length < 2) return '<div class="muted" style="padding:24px">No intraday trades yet.</div>';
+  const W = 320, H = 108, pad = 12;
   const lo = Math.min(...prices, prevClose), hi = Math.max(...prices, prevClose);
   const span = (hi - lo) || 1;
   const X = (i) => (i / (prices.length - 1)) * W;
@@ -354,10 +324,10 @@ function buildChart(prices, prevClose, d) {
   const col = d > 0 ? 'var(--up)' : d < 0 ? 'var(--down)' : 'var(--flat)';
   const ex = X(prices.length - 1).toFixed(1), ey = Y(prices[prices.length - 1]).toFixed(1);
   return `<svg class="spark" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none">
-    <line x1="0" y1="${baseY}" x2="${W}" y2="${baseY}" stroke="var(--stone)" stroke-width="1" stroke-dasharray="3 3" opacity=".55" vector-effect="non-scaling-stroke"/>
-    <path d="M${X(0)},${H} L${pts.join(' L')} L${ex},${H} Z" fill="${col}" opacity=".13"/>
+    <line x1="0" y1="${baseY}" x2="${W}" y2="${baseY}" stroke="var(--stone)" stroke-width="1" stroke-dasharray="3 4" opacity=".5" vector-effect="non-scaling-stroke"/>
+    <path d="M${X(0)},${H} L${pts.join(' L')} L${ex},${H} Z" fill="${col}" opacity=".12"/>
     <path d="M${pts.join(' L')}" fill="none" stroke="${col}" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"/>
-    <circle cx="${ex}" cy="${ey}" r="3.2" fill="${col}"/>
+    <circle cx="${ex}" cy="${ey}" r="3.4" fill="${col}"/>
   </svg>`;
 }
 
@@ -391,23 +361,23 @@ async function openSheet(sym) {
     };
     const dd = q.changePct;
     const bar = (l, side) => `<div class="lvl ${side}" style="--f:${((l.qty || 0) / maxQ * 100).toFixed(0)}%"><span class="p">${fmt(l.price)}</span><span class="q">${fmt(l.qty,0)}</span></div>`;
-    const bids = bid.map((l) => bar(l, 'bid')).join('') || '<div class="muted" style="padding:10px">—</div>';
-    const asks = ask.map((l) => bar(l, 'ask')).join('') || '<div class="muted" style="padding:10px">—</div>';
+    const bids = bid.map((l) => bar(l, 'bid')).join('') || '<div class="muted" style="padding:12px">—</div>';
+    const asks = ask.map((l) => bar(l, 'ask')).join('') || '<div class="muted" style="padding:12px">—</div>';
     const tape = trades.length
       ? trades.map((t) => `<div class="tr"><span class="tm">${t.time}</span><span class="tp dir-${dir(prevClose != null ? t.price - prevClose : 0)}">${fmt(t.price)}</span><span class="tq">${fmt(t.qty,0)}</span></div>`).join('')
-      : '<div class="muted" style="padding:14px">No trades yet.</div>';
+      : '<div class="muted" style="padding:16px">No trades yet.</div>';
     const chrono = prices.slice().reverse();
 
     sheet.innerHTML = `
       <div class="grab"></div>
       <div class="sh-head">
-        <button class="sh-star${watch.has(sym) ? ' on' : ''}" data-sheetstar="${sym}" aria-label="Toggle watch">${watch.has(sym) ? '★' : '☆'}</button>
+        <button class="sh-star${watch.has(sym) ? ' on' : ''}" data-sheetstar="${sym}" aria-label="Follow ${sym}">${watch.has(sym) ? '★' : '☆'}</button>
         <span class="sh-sym">${sym}</span>
       </div>
       <div class="sh-name">${q.name || ''}</div>
       <div class="q-now">
-        <span class="q-price dir-${dir(dd)}">${fmt(q.current)}</span>
-        <span class="q-delta dir-${dir(dd)}">${q.change != null ? (dd > 0 ? '+' : '') + fmt(q.change) : ''} ${dd != null ? '(' + sign(dd) + ')' : ''}</span>
+        <span class="q-price">${fmt(q.current)}</span>
+        <span class="q-delta dir-${dir(dd)}">${q.change != null ? (dd > 0 ? '+' : '') + fmt(q.change) : ''} ${dd != null ? sign(dd) : ''}</span>
       </div>
       <div class="ohlc">
         <div class="cell"><span class="k">Open</span><span class="v">${fmt(q.open)}</span></div>
@@ -421,13 +391,13 @@ async function openSheet(sym) {
       </div>
       <div class="seclabel">Order book</div>
       <div class="ladder">
-        <div class="col"><div class="lh">Bid</div>${bids}</div>
-        <div class="col"><div class="lh">Ask</div>${asks}</div>
+        <div><div class="lh">Bid</div>${bids}</div>
+        <div><div class="lh">Ask</div>${asks}</div>
       </div>
       <div class="seclabel">Recent trades</div>
       <div class="tape">${tape}</div>`;
   } catch (e) {
-    sheet.innerHTML = `<div class="grab"></div><div class="sh-head"><span class="sh-sym">${sym}</span></div><div class="sh-name err" style="color:var(--down)">${e.message}</div>`;
+    sheet.innerHTML = `<div class="grab"></div><div class="sh-head"><span class="sh-sym">${sym}</span></div><div class="sh-name" style="color:var(--down)">${e.message}</div>`;
   }
 }
 
@@ -451,7 +421,6 @@ $('#sheet').addEventListener('click', (e) => {
   s.textContent = on ? '★' : '☆'; s.classList.toggle('on', on);
 });
 
-// --- poll ------------------------------------------------------------------
 loadIndex(); loadList();
 setInterval(loadIndex, 4000);
 setInterval(() => { if (!$('#sheetBg').classList.contains('show')) loadList(); }, 4000);
