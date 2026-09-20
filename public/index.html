@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 <meta name="theme-color" content="#E7E8E6" media="(prefers-color-scheme: light)" />
 <meta name="theme-color" content="#10152A" media="(prefers-color-scheme: dark)" />
+<script>try{var t=localStorage.getItem('ase_theme');if(t)document.documentElement.setAttribute('data-theme',t);}catch(e){}</script>
 <title>ASE Live · Amman Stock Exchange</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -20,12 +21,18 @@
     --font-ar: "IBM Plex Sans Arabic", var(--font);
   }
   @media (prefers-color-scheme: dark) {
-    :root {
+    :root:not([data-theme="light"]) {
       --paper: #10152A; --card: #182138; --line: #28324E; --hair: #1A2340;
       --ink: #E9EAEE; --stone: #8B92A4; --night: #93A8E6;
       --up: #2EBE86; --down: #E7685C; --flat: #7E858D;
       --up-bg: rgba(46,190,134,.14); --down-bg: rgba(231,104,92,.13);
     }
+  }
+  :root[data-theme="dark"] {
+    --paper: #10152A; --card: #182138; --line: #28324E; --hair: #1A2340;
+    --ink: #E9EAEE; --stone: #8B92A4; --night: #93A8E6;
+    --up: #2EBE86; --down: #E7685C; --flat: #7E858D;
+    --up-bg: rgba(46,190,134,.14); --down-bg: rgba(231,104,92,.13);
   }
   * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
   html { -webkit-text-size-adjust: 100%; }
@@ -47,6 +54,10 @@
   .status .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--flat); }
   .status.open { color: var(--up); }
   .status.open .dot { background: var(--up); animation: pulse 2.6s ease-in-out infinite; }
+  .theme-tog { background: none; border: 0; padding: 6px; margin: 0 -6px 0 2px; cursor: pointer; color: var(--stone); line-height: 0; border-radius: 8px; }
+  .theme-tog:hover { color: var(--ink); }
+  .theme-tog svg { width: 18px; height: 18px; display: block; }
+  :focus-visible { outline: 2px solid var(--night); outline-offset: 2px; border-radius: 4px; }
 
   .hero { padding: 22px 0 18px; }
   .ix-label { font-size: 13px; color: var(--stone); }
@@ -135,6 +146,7 @@
     <span class="wm"><span class="a">ASE</span><span class="b">Live</span></span>
     <span class="ar">بورصة عمّان</span>
     <span class="status" id="mktStatus"><span class="dot"></span><span class="lbl">—</span></span>
+    <button class="theme-tog" id="themeTog" aria-label="Switch theme" type="button"></button>
   </div>
   <div class="hero">
     <div class="ix-label">ASE General Index</div>
@@ -161,6 +173,27 @@
 <script>
 // UI talks to the local proxy (/api/*), which fetches + parses the ASE feed.
 const $ = (s) => document.querySelector(s);
+
+// --- theme toggle (system default, explicit choice persisted) --------------
+const THEME_KEY = 'ase_theme';
+const sunSVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2.5M12 19.5V22M4.2 4.2l1.8 1.8M18 18l1.8 1.8M2 12h2.5M19.5 12H22M4.2 19.8l1.8-1.8M18 6l1.8-1.8"/></svg>';
+const moonSVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 14.4A8 8 0 0 1 9.6 4 6.5 6.5 0 1 0 20 14.4Z"/></svg>';
+const effectiveTheme = () => document.documentElement.getAttribute('data-theme') || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+function paintTheme() {
+  const dark = effectiveTheme() === 'dark';
+  const btn = document.getElementById('themeTog');
+  if (btn) { btn.innerHTML = dark ? sunSVG : moonSVG; btn.setAttribute('aria-label', dark ? 'Switch to light theme' : 'Switch to dark theme'); }
+  let tc = document.getElementById('tc');
+  if (!tc) { tc = document.createElement('meta'); tc.name = 'theme-color'; tc.id = 'tc'; document.head.appendChild(tc); }
+  tc.setAttribute('content', dark ? '#10152A' : '#E7E8E6');
+}
+function toggleTheme() {
+  const next = effectiveTheme() === 'dark' ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', next);
+  try { localStorage.setItem(THEME_KEY, next); } catch (e) {}
+  paintTheme();
+}
+matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => { if (!localStorage.getItem(THEME_KEY)) paintTheme(); });
 let tab = 'all', allRows = [], listData = [], query = '';
 let watch = new Set(JSON.parse(localStorage.getItem('ase_watch') || '[]'));
 let lastPx = {}, flashSet = null, marketClosed = false, idxAnimated = false;
@@ -354,6 +387,8 @@ $('#sheet').addEventListener('click', (e) => {
   s.textContent = on ? '★' : '☆'; s.classList.toggle('on', on);
 });
 
+$('#themeTog').addEventListener('click', toggleTheme);
+paintTheme();
 loadIndex(); loadList();
 setInterval(loadIndex, 4000);
 setInterval(() => { if (!$('#sheetBg').classList.contains('show')) loadList(); }, 4000);
