@@ -1,0 +1,43 @@
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="ASE Live">
+  <defs>
+    <linearGradient id="bg" x1="96" y1="48" x2="416" y2="472" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#223457"/>
+      <stop offset="0.55" stop-color="#172544"/>
+      <stop offset="1" stop-color="#10152A"/>
+    </linearGradient>
+    <linearGradient id="line" x1="104" y1="320" x2="408" y2="160" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#0E8E6A"/>
+      <stop offset="1" stop-color="#2FE09A"/>
+    </linearGradient>
+    <linearGradient id="area" x1="256" y1="150" x2="256" y2="404" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#2FE09A" stop-opacity="0.34"/>
+      <stop offset="1" stop-color="#2FE09A" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="sheen" x1="256" y1="40" x2="256" y2="260" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#FFFFFF" stop-opacity="0.10"/>
+      <stop offset="1" stop-color="#FFFFFF" stop-opacity="0"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(408 160) scale(54)">
+      <stop offset="0" stop-color="#3BF0A6" stop-opacity="0.9"/>
+      <stop offset="1" stop-color="#3BF0A6" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <!-- squircle plate -->
+  <rect x="32" y="32" width="448" height="448" rx="116" fill="url(#bg)"/>
+  <rect x="32" y="32" width="448" height="448" rx="116" fill="url(#sheen)"/>
+
+  <!-- baseline -->
+  <line x1="104" y1="404" x2="408" y2="404" stroke="#FFFFFF" stroke-opacity="0.10" stroke-width="4" stroke-linecap="round"/>
+
+  <!-- area under the curve -->
+  <path d="M104 320 L208 256 L288 300 L408 160 L408 404 L104 404 Z" fill="url(#area)"/>
+
+  <!-- price line -->
+  <path d="M104 320 L208 256 L288 300 L408 160" stroke="url(#line)" stroke-width="26" stroke-linecap="round" stroke-linejoin="round"/>
+
+  <!-- live node -->
+  <circle cx="408" cy="160" r="52" fill="url(#glow)"/>
+  <circle cx="408" cy="160" r="22" fill="#10152A"/>
+  <circle cx="408" cy="160" r="15" fill="#3BF0A6"/>
+</svg>
