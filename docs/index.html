@@ -82,6 +82,18 @@ d.lang=l;d.dir=l==='ar'?'rtl':'ltr';})();</script>
   .ix-meta .mv { color: var(--ink); font-weight: 500; }
   .feednote { margin-top: 10px; font-size: 12px; color: var(--ink); }
   .feednote.stale { color: var(--down); font-weight: 500; }
+  .idxspark { margin-top: 14px; height: 40px; }
+  .idxspark svg { width: 100%; height: 40px; display: block; }
+
+  /* ---- live ticker tape ---- */
+  .tape-strip { position: sticky; top: 0; z-index: 6; overflow: hidden; background: var(--card); border-bottom: 1px solid var(--line); }
+  .tape-track { display: inline-flex; white-space: nowrap; direction: ltr; will-change: transform; animation: tape 90s linear infinite; }
+  .tape-strip:hover .tape-track { animation-play-state: paused; }
+  .tk { display: inline-flex; align-items: baseline; gap: 6px; padding: 7px 14px; font-size: 12px; font-variant-numeric: tabular-nums; border-inline-end: 1px solid var(--hair); }
+  .tk b { font-weight: 700; color: var(--ink); }
+  .tk .tkp { color: var(--stone); }
+  .tk .tkc { font-weight: 600; }
+  @keyframes tape { from { transform: translateX(0); } to { transform: translateX(-50%); } }
 
   /* ---- controls ---- */
   .search { width: calc(100% - 40px); margin: 4px 20px 14px; display: block; background: var(--card); color: var(--ink); border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; font: 400 16px var(--font); outline: none; }
@@ -159,10 +171,11 @@ d.lang=l;d.dir=l==='ar'?'rtl':'ltr';})();</script>
   .tape .tp { font-weight: 600; } .tape .tp.dir-up { color: var(--up); } .tape .tp.dir-down { color: var(--down); } .tape .tp.dir-flat { color: var(--ink); }
   .tape .tq { color: var(--stone); }
 
-  @media (prefers-reduced-motion: reduce) { *, .sheet { animation: none !important; transition: none !important; } }
+  @media (prefers-reduced-motion: reduce) { *, .sheet { animation: none !important; transition: none !important; } .tape-strip { overflow-x: auto; } }
 </style>
 </head>
 <body>
+<div class="tape-strip" id="tapeStrip" aria-hidden="true" style="display:none"><div class="tape-track" id="tapeTrack"></div></div>
 <header>
   <div class="brand">
     <span class="wm"><span class="a">ASE</span><span class="b">Live</span></span>
@@ -178,6 +191,7 @@ d.lang=l;d.dir=l==='ar'?'rtl':'ltr';})();</script>
       <span class="ix-chg" id="idxChg"></span>
     </div>
     <div class="ix-meta" id="idxMeta"></div>
+    <div class="idxspark" id="idxSpark" aria-hidden="true"></div>
     <div class="feednote" id="feedNote" role="status"></div>
   </div>
 </header>
@@ -219,8 +233,9 @@ const I18N = {
     o: 'Open', h: 'High', l: 'Low', p: 'Prev', book: 'Order book', bid: 'Bid', ask: 'Ask', recent: 'Recent trades',
     noIntraday: 'No intraday trades yet.', noTrades: 'No trades yet.', loadingOne: 'Loading…',
     sheetErr: 'Couldn’t load this symbol. Close and try again.', chart: 'Intraday price chart', prevCap: 'prev close',
-    note: 'Delayed data · Source: ASELive · Refreshed {t}', noteWait: 'Delayed data · Source: ASELive',
-    noteBad: 'Feed unreachable · last refreshed {t}', noteBadNone: 'Feed unreachable',
+    note: 'Delayed data · Source: ASELive · updated {t}', noteWait: 'Delayed data · Source: ASELive',
+    noteBad: 'Feed unreachable · last updated {t}', noteBadNone: 'Feed unreachable',
+    agoLive: 'just now', agoSec: '{s}s ago', agoMin: '{m}m ago',
   },
   ar: {
     open: 'السوق مفتوح', closed: 'السوق مغلق', prevClose: 'الإغلاق السابق', vol: 'الحجم', val: 'القيمة', trades: 'الصفقات',
@@ -233,8 +248,9 @@ const I18N = {
     o: 'الافتتاح', h: 'الأعلى', l: 'الأدنى', p: 'السابق', book: 'دفتر الأوامر', bid: 'الطلب', ask: 'العرض', recent: 'آخر الصفقات',
     noIntraday: 'لا توجد صفقات خلال اليوم بعد.', noTrades: 'لا توجد صفقات بعد.', loadingOne: 'جارٍ التحميل…',
     sheetErr: 'تعذّر تحميل هذا الرمز. أغلق النافذة وحاول مجدداً.', chart: 'الرسم البياني للسعر خلال اليوم', prevCap: 'الإغلاق السابق',
-    note: 'بيانات متأخرة · المصدر: ASELive · آخر تحديث {t}', noteWait: 'بيانات متأخرة · المصدر: ASELive',
+    note: 'بيانات متأخرة · المصدر: ASELive · التحديث {t}', noteWait: 'بيانات متأخرة · المصدر: ASELive',
     noteBad: 'تعذّر الوصول إلى المصدر · آخر تحديث {t}', noteBadNone: 'تعذّر الوصول إلى المصدر',
+    agoLive: 'الآن', agoSec: 'قبل {s} ث', agoMin: 'قبل {m} د',
   },
 };
 let lang = (() => { const v = lsGet('ase_lang'); return v === 'ar' || v === 'en' ? v : (/^ar/i.test(navigator.language || '') ? 'ar' : 'en'); })();
@@ -263,7 +279,8 @@ matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => { if
 let tab = 'all', allRows = [], listData = [], query = '';
 let watch = new Set((() => { try { const a = JSON.parse(lsGet('ase_watch') || '[]'); return Array.isArray(a) ? a.filter((x) => typeof x === 'string') : []; } catch (e) { return []; } })());
 let loaded = false;
-let lastPx = {}, flashSet = null, marketClosed = false, idxAnimated = false;
+let lastPx = {}, flashSet = null, marketClosed = false;
+let idxSeries = [], idxDisplayed = null, idxRaf = 0, tapeBuilt = false;
 const saveWatch = () => lsSet('ase_watch', JSON.stringify([...watch]));
 function toggleWatch(sym) {
   if (watch.has(sym)) watch.delete(sym); else watch.add(sym);
@@ -320,17 +337,61 @@ function setStatus(open) {
   el.className = 'status' + (open == null ? '' : open ? ' open' : ' closed');
   el.querySelector('.lbl').textContent = open == null ? '—' : L(open ? 'open' : 'closed');
 }
+// tween the index from its last shown value to the new one on every update
 function setIndexValue(v) {
   const el = $('#idxVal');
+  cancelAnimationFrame(idxRaf);
+  if (v == null) { el.textContent = fmt(v); idxDisplayed = null; return; }
   const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
-  if (idxAnimated || reduce || v == null) { el.textContent = fmt(v); idxAnimated = true; return; }
-  idxAnimated = true;
-  const dur = 750, t0 = performance.now();
+  const from = idxDisplayed == null ? 0 : idxDisplayed;
+  if (reduce || from === v) { el.textContent = fmt(v); idxDisplayed = v; return; }
+  const dur = idxDisplayed == null ? 750 : 450, t0 = performance.now();
   (function step(t) {
     const k = Math.min(1, (t - t0) / dur), e = 1 - Math.pow(1 - k, 3);
-    el.textContent = fmt(v * e);
-    if (k < 1) requestAnimationFrame(step); else el.textContent = fmt(v);
+    el.textContent = fmt(from + (v - from) * e);
+    if (k < 1) idxRaf = requestAnimationFrame(step); else { el.textContent = fmt(v); idxDisplayed = v; }
   })(t0);
+}
+// index sparkline built live from each poll (session-only series)
+function miniSpark(vals, d) {
+  const el = $('#idxSpark'); if (!el) return;
+  if (!vals || vals.length < 2) { el.innerHTML = ''; return; }
+  const W = 320, H = 40, pad = 4;
+  const lo = Math.min(...vals), hi = Math.max(...vals), span = (hi - lo) || 1;
+  const X = (i) => (i / (vals.length - 1)) * W;
+  const Y = (v) => H - pad - ((v - lo) / span) * (H - 2 * pad);
+  const pts = vals.map((v, i) => `${X(i).toFixed(1)},${Y(v).toFixed(1)}`);
+  const col = d > 0 ? 'var(--up)' : d < 0 ? 'var(--down)' : 'var(--flat)';
+  const ex = X(vals.length - 1).toFixed(1), ey = Y(vals[vals.length - 1]).toFixed(1);
+  el.innerHTML = `<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none">
+    <path d="M${X(0)},${H} L${pts.join(' L')} L${ex},${H} Z" fill="${col}" opacity=".10"/>
+    <path d="M${pts.join(' L')}" fill="none" stroke="${col}" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"/>
+    <circle cx="${ex}" cy="${ey}" r="2.6" fill="${col}"/></svg>`;
+}
+// scrolling ticker tape — built once, values updated in place so the scroll never jumps
+function renderTape(rows) {
+  const strip = $('#tapeStrip'), track = $('#tapeTrack'); if (!track) return;
+  const items = rows.filter((r) => r.last != null);
+  if (!items.length) { strip.style.display = 'none'; return; }
+  strip.style.display = '';
+  if (!tapeBuilt) {
+    const html = items.map((r) => `<span class="tk" data-tsym="${esc(r.sym)}"><b>${esc(r.sym)}</b><span class="tkp">${fmt(r.last)}</span><span class="tkc dir-${dir(r.chg)}">${tri(r.chg)} ${sign(r.chg)}</span></span>`).join('');
+    track.innerHTML = html + html; // two copies → seamless loop
+    tapeBuilt = true; return;
+  }
+  for (const r of items) {
+    track.querySelectorAll('[data-tsym="' + CSS.escape(r.sym) + '"]').forEach((el) => {
+      el.querySelector('.tkp').textContent = fmt(r.last);
+      const c = el.querySelector('.tkc'); c.textContent = tri(r.chg) + ' ' + sign(r.chg); c.className = 'tkc dir-' + dir(r.chg);
+    });
+  }
+}
+async function loadTape() {
+  try {
+    const a = await jsonp('ticker', 'ticker.php');
+    const syms = a[0] || [], last = a[1] || [], chg = a[2] || [];
+    renderTape(syms.map((s, i) => ({ sym: s, last: num(last[i]), chg: num(chg[i]) })));
+  } catch (e) {}
 }
 // everything language-dependent in the index block lives here so a language switch can repaint it
 function renderIndex() {
@@ -351,11 +412,17 @@ function renderIndex() {
 // --- feed disclosure: every figure is delayed ASELive data; say when we last got it
 const feed = { idx: { ok: null, bad: false }, list: { ok: null, bad: false } };
 function feedMark(k, ok) { feed[k].bad = !ok; if (ok) feed[k].ok = new Date(); renderNote(); }
+function relAge(d) {
+  const s = Math.max(0, Math.round((Date.now() - d) / 1000));
+  if (s <= 1) return L('agoLive');
+  if (s < 60) return L('agoSec', { s });
+  return L('agoMin', { m: Math.floor(s / 60) });
+}
 function renderNote() {
   const el = $('#feedNote'); if (!el) return;
   const bad = feed.idx.bad || feed.list.bad;
   const last = [feed.idx.ok, feed.list.ok].filter(Boolean).sort((x, y) => y - x)[0];
-  const tm = last ? '<bdi dir="ltr">' + last.toLocaleTimeString('en-GB') + '</bdi>' : '';
+  const tm = last ? esc(relAge(last)) : '';
   el.className = 'feednote' + (bad ? ' stale' : '');
   const tpl = bad ? (last ? L('noteBad', { t: '\u0001' }) : L('noteBadNone')) : (last ? L('note', { t: '\u0001' }) : L('noteWait'));
   el.innerHTML = esc(tpl).replace('\u0001', tm);
@@ -367,14 +434,18 @@ async function loadIndex() {
     const value = num(v[0]), chg = num(v[1]), pts = num(v[2]), prev = num(v[6]);
     feedMark('idx', true);
     if (value == null) {
-      setStatus(false); idxAnimated = true;
+      setStatus(false);
       idx = { value: null, prev };
       $('#idxVal').textContent = prev != null ? fmt(prev) : '—';
+      idxDisplayed = prev != null ? prev : null;
+      miniSpark([], 0);
       renderIndex();
       return;
     }
     setStatus(true);
     setIndexValue(value);
+    idxSeries.push(value); if (idxSeries.length > 120) idxSeries.shift();
+    miniSpark(idxSeries, chg);
     idx = { value, chg, pts, prev, vol: num(v[7]), val: num(v[8]), trd: num(v[9]) };
     renderIndex();
   } catch (e) { feedMark('idx', false); }
@@ -393,6 +464,7 @@ async function loadList() {
       const a = await jsonp('ticker', 'ticker.php');
       const syms = a[0] || [], last = a[1] || [], chg = a[2] || [];
       allRows = syms.map((s, i) => ({ sym: s, name: names[s] || null, last: num(last[i]), chg: num(chg[i]) })).filter((r) => r.last != null);
+      renderTape(allRows);
       listData = tab === 'watch' ? allRows.filter((r) => watch.has(r.sym)) : allRows;
     } else if (tab === 'gainers') { listData = mapList(await jsonp('market_gainers', 'Gainers.php'), 3); }
     else if (tab === 'losers') { listData = mapList(await jsonp('market_losers', 'losers.php'), 3); }
@@ -609,8 +681,12 @@ $('#langTog').addEventListener('click', () => {
 $('#themeTog').addEventListener('click', toggleTheme);
 applyLang();
 loadIndex(); loadList();
-setInterval(loadIndex, 4000);
-setInterval(() => { if (!$('#sheetBg').classList.contains('show')) loadList(); }, 4000);
+setInterval(loadIndex, 3000);
+setInterval(() => { if (!$('#sheetBg').classList.contains('show')) loadList(); }, 3000);
+// keep the tape live on tabs that don't fetch the full ticker
+setInterval(() => { if (tab !== 'all' && tab !== 'watch') loadTape(); }, 3000);
+// tick the "updated Ns ago" label between polls
+setInterval(renderNote, 1000);
 </script>
 </body>
 </html>
